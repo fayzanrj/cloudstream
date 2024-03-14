@@ -1,14 +1,28 @@
-import TrendingMovies from "@/components/home/TrendingMovies";
 import TrendingShows from "@/components/home/TrendingShows";
-import { InboxArrowDownIcon, TvIcon } from "@heroicons/react/24/outline";
-import tvData from "../../tvData";
-import Link from "next/link";
 import DetailCard from "@/components/shared/DetailCard";
 import { TvDetailsProps } from "@/props/TvShowProps";
+import React from "react";
+import tvData from "../../../tvData";
+import fetchDiscover from "@/libs/FetchDiscover";
+import Pagination from "@/components/search/Pagination";
+import CatalogList from "@/components/shared/CatalogList";
+import { Metadata } from "next";
 
-export default async function Home() {
+export const metadata: Metadata = {
+  title: "Tv Shows",
+};
+
+interface TvShowProps {
+  searchParams: { page: number };
+}
+
+const TvShows: React.FC<TvShowProps> = async ({ searchParams }) => {
   const randomNumber = Math.floor(Math.random() * 5);
   const data = tvData[randomNumber];
+  const { results, totalPages } = await fetchDiscover(
+    "tv",
+    searchParams.page ? searchParams.page : 1
+  );
 
   const {
     id,
@@ -49,9 +63,24 @@ export default async function Home() {
       </DetailCard>
 
       <section className="w-full h-[100vh] py-10 text-white">
-        <TrendingMovies />
         <TrendingShows />
+      </section>
+
+      <section className="text-white w-full min-h-[100svh]" id="discover">
+        <h2 className="m-4 text-3xl font-semibold">Discover</h2>
+        <CatalogList list={results} type="tv" />
+
+        {/* {currentPage > 0 && ( */}
+        <Pagination
+          href={`/tv`}
+          type={"tv"}
+          totalPages={totalPages}
+          currentPage={searchParams.page}
+          scroll
+        />
       </section>
     </main>
   );
-}
+};
+
+export default TvShows;
