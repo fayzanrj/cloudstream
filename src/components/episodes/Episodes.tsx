@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import AllEpisodes from "./AllEpisodes";
 import Loader from "../Loader";
+import Image from "next/image";
 
 interface WatchProps {
   tmdbId: number;
@@ -38,6 +39,7 @@ const Episodes: React.FC<WatchProps> = ({ tmdbId, tvDetails }) => {
         );
         const data = await response.json();
         setEpisodes(data.episodes as EpisodeProps[]);
+        console.log(data.episodes);
       } catch (error) {
       } finally {
         setIsLoading(false);
@@ -88,7 +90,7 @@ const Episodes: React.FC<WatchProps> = ({ tmdbId, tvDetails }) => {
       ) : (
         <section className="mt-10">
           <h2 className="text-4xl font-semibold my-6">Episodes</h2>
-          <div className="flex flex-wrap gap-3 relative px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 relative px-4">
             {episodes.map((ep) => {
               const epFromLink = searchParams.get("e");
               const parsedEpisode =
@@ -98,13 +100,24 @@ const Episodes: React.FC<WatchProps> = ({ tmdbId, tvDetails }) => {
                   key={ep.id}
                   onClick={() => handleEpisodeChange(ep.episode_number)}
                   href={`/tv/${tmdbId}/watch?s=${ep.season_number}&e=${ep.episode_number}`}
+                  className={`w-full p-2 rounded-sm ${
+                    ep.episode_number === seasonEpisode.episode
+                      ? "bg-stone-900"
+                      : "bg-transparent"
+                  }`}
                 >
+                  <Image
+                    src={process.env.NEXT_PUBLIC_TMDB_IMAGE_URL + ep.still_path}
+                    alt="thumbnail"
+                    width={800}
+                    height={200}
+                    quality={100}
+                    className="w-full"
+                  />
                   <button
-                    className={`p-2 px-4 border border-stone-600 rounded-lg ${
-                      ep.episode_number === seasonEpisode.episode
-                        ? "bg-stone-600"
-                        : "bg-transparent"
-                    }`}
+                    className={
+                      "px-1 py-2 w-full text-nowrap text-left overflow-hidden text-ellipsis border-stone-600 rounded-lg text-xl md:text-lg"
+                    }
                   >
                     {ep.episode_number} : {ep.name}
                   </button>

@@ -8,7 +8,7 @@ const fetchSearchResults = async (
 ) => {
   try {
     const response = await fetch(
-      `${process.env.TMDB_API_URL}/search/${type}?query=${query}&include_adult=false&language=en-US&page=${page}&api_key=${process.env.TMDB_API_KEY}`,
+      `${process.env.TMDB_API_URL}/search/${type}?query=${query}&include_adult=false&page=${page}&api_key=${process.env.TMDB_API_KEY}`,
       { cache: "no-store" }
     );
 
