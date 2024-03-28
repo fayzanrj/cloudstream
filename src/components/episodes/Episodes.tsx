@@ -1,11 +1,10 @@
 "use client";
 import { EpisodeProps, TvDetailsProps } from "@/props/TvShowProps";
+import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import AllEpisodes from "./AllEpisodes";
 import Loader from "../Loader";
-import Image from "next/image";
 
 interface WatchProps {
   tmdbId: number;
@@ -58,7 +57,7 @@ const Episodes: React.FC<WatchProps> = ({ tmdbId, tvDetails }) => {
   };
 
   return (
-    <div className="w-full min-h-[100vh] text-white px-2 py-20" id="episodes">
+    <div className="w-full min-h-[100vh] text-white px-2 py-10" id="episodes">
       <section>
         <h2 className="text-4xl font-semibold my-6">Seasons</h2>
         <div className="flex flex-wrap gap-2 px-4">
@@ -93,27 +92,29 @@ const Episodes: React.FC<WatchProps> = ({ tmdbId, tvDetails }) => {
           <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 relative px-4">
             {episodes.map((ep) => {
               const epFromLink = searchParams.get("e");
-              const parsedEpisode =
-                epFromLink !== null ? parseInt(epFromLink) : 1;
               return (
                 <Link
                   key={ep.id}
                   onClick={() => handleEpisodeChange(ep.episode_number)}
                   href={`/tv/${tmdbId}/watch?s=${ep.season_number}&e=${ep.episode_number}`}
-                  className={`w-full p-2 rounded-sm ${
+                  className={`w-full min-h-40 h-fit my-4 p-2 rounded-sm ${
                     ep.episode_number === seasonEpisode.episode
                       ? "bg-stone-900"
                       : "bg-transparent"
                   }`}
                 >
-                  <Image
-                    src={process.env.NEXT_PUBLIC_TMDB_IMAGE_URL + ep.still_path}
-                    alt="thumbnail"
-                    width={800}
-                    height={200}
-                    quality={100}
-                    className="w-full"
-                  />
+                  <div className="w-full h-4/6">
+                    <Image
+                      src={
+                        process.env.NEXT_PUBLIC_TMDB_IMAGE_URL + ep.still_path
+                      }
+                      alt="thumbnail"
+                      width={800}
+                      height={200}
+                      quality={100}
+                      className="w-full"
+                    />
+                  </div>
                   <button
                     className={
                       "px-1 py-2 w-full text-nowrap text-left overflow-hidden text-ellipsis border-stone-600 rounded-lg text-xl md:text-lg"
@@ -121,6 +122,9 @@ const Episodes: React.FC<WatchProps> = ({ tmdbId, tvDetails }) => {
                   >
                     {ep.episode_number} : {ep.name}
                   </button>
+                  {new Date() < new Date(ep.air_date) && (
+                    <div>(Yet to come out)</div>
+                  )}
                 </Link>
               );
             })}
